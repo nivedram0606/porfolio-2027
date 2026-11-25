@@ -8,7 +8,7 @@ export const profile = {
   location: 'Bengaluru, India',
   email: 'nivedchempakam@gmail.com',
   linkedin: 'https://www.linkedin.com/in/nived-ram-online/',
-  github: 'https://github.com/nived-ram', // TODO: confirm exact GitHub handle
+  github: 'https://github.com/nivedram0606',
   resume: '/Nived_Ram_Resume.pdf',
   // Drop a portrait at public/me.jpg and it will show in the hero + connect sections.
   photo: '/me.jpg',
