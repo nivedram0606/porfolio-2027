@@ -44,13 +44,14 @@ const languages = [
 ];
 const domains = ['ERP systems', 'CRM systems', 'HealthTech', 'EdTech', 'InsurTech', 'AI products', 'GovTech', 'AI-assisted software development', 'Agentic coding'];
 /** AI coding agents as typed entities, so engines can connect "Nived Ram" with each tool and its maker. */
+// Typed as Thing + additionalType: a plain SoftwareApplication makes Google validate each one as an
+// app rich result (needs offers/ratings) and report it invalid. These are tools used, not apps offered.
 const agentEntities = aiAgents.map((a) => ({
-  '@type': 'SoftwareApplication',
+  '@type': 'Thing',
+  additionalType: 'https://schema.org/SoftwareApplication',
   name: a.name,
   url: a.url,
-  applicationCategory: 'DeveloperApplication',
   description: `AI coding agent by ${a.maker}`,
-  creator: { '@type': 'Organization', name: a.maker },
 }));
 const agentNames = aiAgents.map((a) => `${a.name} (${a.maker})`).join(', ');
 const current = experience.find((e) => e.current);
@@ -134,7 +135,8 @@ export function jsonLd() {
     isPartOf: { '@id': WEBSITE_ID },
     mainEntity: { '@id': PERSON_ID },
     about: { '@id': PERSON_ID },
-    dateModified: today(),
+    // Rich Results Test requires a full ISO 8601 datetime with timezone here.
+    dateModified: new Date().toISOString(),
     primaryImageOfPage: { '@type': 'ImageObject', url: abs(site.ogImage), width: 1200, height: 630 },
   };
 
