@@ -1,0 +1,177 @@
+/* Start a Conversation: interaction model measured from the reference site.
+   Springs approximate Framer's defaults: ~450ms with a light overshoot. */
+:root {
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --spring-soft: cubic-bezier(0.22, 1.2, 0.36, 1);
+  --bubble: #1a1c1d;
+  --bubble-active: #09162a;
+  --blue: #0080ff;
+  --blue-press: #0463c2;
+}
+
+/* ---------- heading lens ---------- */
+.lens { cursor: default; user-select: none; white-space: nowrap; }
+.lens__word { font-style: normal; display: inline-block; white-space: nowrap; }
+.lens__gap { white-space: pre; }
+.lens span { display: inline-block; transform-origin: 50% 65%; transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1); will-change: transform; }
+
+/* ---------- word-by-word reveal ---------- */
+.words span { display: inline-block; white-space: pre; opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease, transform 0.6s var(--ease); }
+.words.is-in span { opacity: 1; transform: none; }
+
+/* ---------- channel row ---------- */
+.connect__channels { display: flex; gap: 20px; justify-content: center; align-items: center; flex-wrap: wrap; margin-top: 32px; opacity: 0; transform: translateY(10px); transition: opacity 0.6s ease, transform 0.6s var(--ease); }
+.connect__channels.is-in { opacity: 1; transform: none; }
+
+/* ---------- shine pill (outline) ---------- */
+.shine { position: relative; display: inline-grid; height: 48px; transition: transform 0.45s var(--spring); }
+.shine__shadow, .shine__base { grid-area: 1 / 1; border-radius: 999px; border: 1.5px solid #fff; background: var(--bg); }
+.shine__base { position: relative; overflow: hidden; display: flex; align-items: center; padding: 0 24px; transition: transform 0.45s var(--spring); }
+.shine__label { position: relative; z-index: 1; font-size: 16px; font-weight: 500; mix-blend-mode: difference; color: #fff; }
+.shine__streak { position: absolute; top: -30%; left: -38px; width: 14px; height: 160%; background: #fff; transform: rotate(17deg); transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+.shine__streak--2 { left: -58px; width: 9px; transition-delay: 0.06s; }
+.shine__stars { position: absolute; inset: -45% -30%; pointer-events: none; opacity: 0; transform: scale(0.4); transition: opacity 0.25s ease, transform 0.45s var(--spring); }
+.shine__stars i { position: absolute; width: 12px; height: 12px; color: #fff; transform: scale(2.5); transition: transform 0.45s var(--spring); }
+.shine__stars i svg { width: 100%; height: 100%; display: block; }
+.shine__stars i:nth-child(1) { left: 4%; top: 10%; width: 10px; height: 10px; }
+.shine__stars i:nth-child(2) { left: 14%; top: 78%; width: 14px; height: 14px; }
+.shine__stars i:nth-child(3) { right: 6%; top: 2%; width: 16px; height: 16px; }
+.shine__stars i:nth-child(4) { right: 0; top: 52%; width: 20px; height: 20px; }
+.shine__stars i:nth-child(5) { left: 58%; bottom: 0; width: 8px; height: 8px; }
+.shine__stars i:nth-child(6) { left: 0; top: 46%; width: 7px; height: 7px; }
+
+.shine:hover, .shine:focus-visible { transform: scale(1.12) rotate(-4deg); }
+.shine:hover .shine__base, .shine:focus-visible .shine__base { transform: translate(5px, -5px); }
+.shine:hover .shine__streak, .shine:focus-visible .shine__streak { transform: translateX(220px) rotate(17deg); }
+.shine:hover .shine__stars, .shine:focus-visible .shine__stars { opacity: 1; transform: none; }
+.shine:hover .shine__stars i, .shine:focus-visible .shine__stars i { transform: scale(1); animation: twinkle 1.6s ease-in-out 0.45s infinite; }
+.shine:hover .shine__stars i:nth-child(even) { animation-delay: 0.8s; }
+@keyframes twinkle { 50% { transform: scale(0.6) rotate(45deg); opacity: 0.6; } }
+
+/* ---------- proof pill (primary) ---------- */
+.proof { position: relative; display: inline-flex; align-items: center; height: 44px; padding: 0 22px; border-radius: 999px; background: var(--blue); color: #fff; font-size: 15px; font-weight: 500; transition: background 0.25s ease; }
+.proof:hover, .proof:focus-visible { background: var(--blue-press); }
+.proof__tip {
+  position: absolute; bottom: calc(100% + 14px); left: 50%; z-index: 5;
+  padding: 12px 16px 14px; border-radius: 14px; background: var(--bubble); border: 1px solid var(--line);
+  white-space: nowrap; pointer-events: none; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  opacity: 0; transform: translate(-50%, 8px); transition: opacity 0.3s ease, transform 0.4s var(--spring);
+}
+.proof__tip::after { content: ''; position: absolute; left: 50%; bottom: -7px; width: 12px; height: 12px; margin-left: -6px; background: var(--bubble); border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); transform: rotate(45deg); }
+.proof__title { display: block; text-align: center; font-size: 13px; font-weight: 600; opacity: 0; transform: translateY(10px); transition: opacity 0.35s ease 0.05s, transform 0.45s var(--spring) 0.05s; }
+.proof__faces { display: flex; justify-content: center; margin-top: 9px; padding-left: 7px; }
+.proof__faces span {
+  display: grid; place-items: center; width: 28px; height: 28px; margin-left: -7px; border-radius: 50%;
+  border: 2px solid var(--bubble); font-size: 10px; font-weight: 700; color: #fff; text-transform: uppercase;
+  opacity: 0; transform: translateY(10px) scale(0.6);
+  transition: opacity 0.3s ease, transform 0.45s var(--spring); transition-delay: calc(var(--i) * 50ms + 80ms);
+}
+.proof:hover .proof__tip, .proof:focus-visible .proof__tip { opacity: 1; transform: translate(-50%, 0); }
+.proof:hover .proof__title, .proof:focus-visible .proof__title,
+.proof:hover .proof__faces span, .proof:focus-visible .proof__faces span { opacity: 1; transform: none; }
+
+/* ---------- chat FAQ ---------- */
+.connect__body { display: grid; grid-template-columns: minmax(0, 700px) 1fr; gap: 56px; align-items: start; max-width: 1100px; margin: 0 auto; }
+.chat { display: flex; flex-direction: column; gap: 12px; }
+.chat__q { display: flex; align-items: center; gap: 12px; text-align: left; max-width: 100%; }
+.chat__bubble { position: relative; max-width: 490px; padding: 12px 20px; border-radius: 24px; background: var(--bubble); font-size: 15px; line-height: 1.5; transition: background 0.3s ease; }
+.chat__item.is-open .chat__bubble { background: var(--bubble-active); }
+.chat__icon { flex: none; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid rgba(255, 255, 255, 0.3); color: rgba(255, 255, 255, 0.6); transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.3s var(--spring); }
+.chat__icon path { stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; fill: none; }
+.chat__vbar { transform-box: fill-box; transform-origin: center; transition: transform 0.3s var(--spring); }
+.chat__q:hover .chat__icon, .chat__item.is-open .chat__icon { background: #0078ff; border-color: #0078ff; color: #fff; }
+.chat__q:hover .chat__icon { transform: scale(1.1); }
+.chat__item.is-open .chat__vbar { transform: scaleY(0); }
+
+.chat__a { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.45s var(--ease); }
+.chat__item.is-open .chat__a { grid-template-rows: 1fr; }
+.chat__a-inner { min-height: 0; overflow: hidden; overflow: clip; overflow-clip-margin: 40px; padding-right: 10px; }
+.chat__answer {
+  position: relative; width: fit-content; max-width: 490px; margin: 10px 0 6px auto; padding: 14px 20px;
+  border-radius: 24px; background: var(--blue); color: #fff; font-size: 14.5px; line-height: 1.6;
+  transform-origin: 100% 0; opacity: 0; transform: scale(0.9); transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.chat__item.is-open .chat__answer { opacity: 1; transform: none; animation: jelly 0.55s linear both; }
+.chat__ear { position: absolute; right: -7px; bottom: 0; width: 17px; height: 25px; fill: var(--blue); }
+/* Stretch-then-squash curve sampled from the reference (scaleY 1.49 -> 0.97 -> 1). */
+@keyframes jelly {
+  0% { opacity: 0; transform: scale(0.9, 0.9); }
+  10% { opacity: 0.5; transform: translateY(22px) scale(0.95, 1.49); }
+  25% { opacity: 0.9; transform: translateY(3.5px) scale(0.99, 1.08); }
+  38% { opacity: 1; transform: translateY(-1.4px) scale(1.006, 0.968); }
+  60% { transform: translateY(-0.4px) scale(1.001, 0.99); }
+  80% { transform: translateY(0.08px) scale(1, 1.002); }
+  100% { opacity: 1; transform: none; }
+}
+
+.sticker { position: absolute; width: 24px; height: 24px; pointer-events: none; transition: transform 0.4s var(--spring); }
+.sticker--heart { top: -11px; right: -9px; fill: #ff4f7b; transform: rotate(14deg); }
+.sticker--star { left: -15px; bottom: -6px; fill: #ffd23f; transform: rotate(-14deg); }
+.chat__q:hover .sticker--heart { transform: rotate(-6deg) scale(1.25); }
+.chat__q:hover .sticker--star { transform: rotate(20deg) scale(1.25); }
+
+/* ---------- 3D flip portrait ---------- */
+.flip { display: flex; flex-direction: column; align-items: center; gap: 18px; justify-self: center; }
+.flip__stage { position: relative; width: 236px; height: 286px; perspective: 1000px; cursor: pointer; }
+.flip__space { position: absolute; inset: 0; transform-style: preserve-3d; transform: rotateY(180deg); transition: transform 1s var(--spring-soft); }
+.flip__stage.is-revealed .flip__space { transform: rotateY(0deg); }
+
+.flip__main { position: absolute; inset: 6%; transform-style: preserve-3d; transform: rotateY(180deg) translateZ(120px); }
+.flip__main .connect__portrait { position: absolute; inset: 0; border-radius: 12px; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.connect__portrait img { filter: grayscale(1) contrast(1.15) brightness(1.05); object-position: 50% 28%; }
+/* Natural black-and-white photo with a soft vignette for depth. */
+.connect__portrait::before { content: ''; position: absolute; inset: 0; z-index: 1; background: radial-gradient(ellipse at 50% 35%, transparent 45%, rgba(0, 0, 0, 0.45) 100%); pointer-events: none; }
+/* Back of the photo: shown un-mirrored and dimmed once the stage has swung round. */
+.flip__main::after {
+  content: ''; position: absolute; inset: 0; border-radius: 12px; transform: rotateY(180deg);
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.08), transparent 60%), #111213; border: 1px solid var(--line-2);
+}
+
+.flip__card {
+  position: absolute; left: 30%; top: 28%; width: 100px; height: 128px; padding: 10px; border-radius: 8px;
+  display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; text-align: left;
+  background: radial-gradient(circle at 30% 20%, var(--hue), transparent 70%), linear-gradient(160deg, #23272a, #0f1011);
+  border: 1px solid rgba(255, 255, 255, 0.14); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+  transform: translateZ(var(--z)); backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  transition: left 1s var(--spring-soft), top 1s var(--spring-soft);
+}
+.flip__card b { font-size: 12px; font-weight: 600; line-height: 1.2; color: #fff; }
+.flip__card em { font-style: normal; font-size: 10px; color: rgba(255, 255, 255, 0.65); }
+.flip__stage.is-revealed .flip__card { left: var(--x); top: var(--y); }
+.flip__card--agent { width: 108px; height: 118px; }
+.flip__card--agent small { margin-bottom: auto; font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); }
+.flip__card--agent b { font-size: 17px; letter-spacing: -0.01em; }
+
+.flip__hint { font-family: var(--font-mono); font-size: 12px; color: var(--dim); letter-spacing: 0.04em; }
+.flip__hint::after { content: '_'; margin-left: 2px; animation: blink 1s steps(1) infinite; }
+
+/* ---------- responsive / motion ---------- */
+@media (max-width: 960px) {
+  .connect__body { grid-template-columns: 1fr; gap: 64px; }
+  .flip { order: -1; }
+}
+@media (max-width: 640px) {
+  .lens { white-space: normal; }
+  .chat__bubble { font-size: 14px; }
+  .chat__answer { max-width: 88%; }
+  .flip__stage { transform: scale(0.85); }
+}
+@media (hover: none) {
+  .lens span { transform: none !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .words span, .connect__channels { opacity: 1 !important; transform: none !important; }
+  .chat__item.is-open .chat__answer { animation: none; }
+}
+
+/* ---------- entrance choreography ---------- */
+/* Heading letters rise in (uses `translate`, so the hover lens `transform` keeps working). */
+.lens span { translate: 0 0.7em; opacity: 0; transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), translate 0.9s var(--ease), opacity 0.6s ease; transition-delay: 0s, calc(var(--k) * 28ms), calc(var(--k) * 28ms); }
+.lens.is-in span { translate: 0 0; opacity: 1; }
+/* Chat bubbles slide in from the left one after another, like messages arriving. */
+.chat__item { opacity: 0; translate: -32px 0; transition: opacity 0.6s ease, translate 0.8s var(--spring-soft); transition-delay: calc(var(--i) * 120ms + 100ms); }
+.chat.is-in .chat__item { opacity: 1; translate: 0 0; }
+@media (prefers-reduced-motion: reduce) {
+  .lens span, .chat__item { opacity: 1 !important; translate: none !important; }
+}

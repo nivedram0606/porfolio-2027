@@ -1,0 +1,86 @@
+/* ---------- boot loader ---------- */
+.loader {
+  position: fixed; inset: 0; z-index: 200; overflow: hidden; cursor: pointer;
+  display: grid; grid-template-columns: 1fr minmax(0, 720px) 1fr; align-items: center; gap: 48px; padding: 0 5vw;
+  background: #050505; color: #e9edf0; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.02em;
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 0.95s cubic-bezier(0.76, 0, 0.24, 1);
+}
+.loader__grid {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
+}
+
+/* left: status list, active line inverted like a selection */
+.loader__steps { position: relative; justify-self: start; display: flex; flex-direction: column; gap: 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; animation: ldFade 0.6s ease both 0.2s; }
+/* No transition: a hard swap reads like a terminal selection jumping lines. */
+.loader__steps li { padding: 1px 4px; color: rgba(255, 255, 255, 0.38); white-space: nowrap; }
+.loader__steps li.is-done { color: rgba(255, 255, 255, 0.75); }
+.loader__steps li.is-active { background: #f2f2f2; color: #050505; }
+
+/* right: note */
+.loader__note { position: relative; justify-self: end; max-width: 300px; text-align: right; font-size: 11px; font-weight: 600; line-height: 1.5; color: rgba(255, 255, 255, 0.7); animation: ldFade 0.6s ease both 0.35s; }
+
+/* centre: macOS terminal */
+.term {
+  position: relative; width: 100%; border-radius: 12px; overflow: hidden;
+  background: rgba(22, 24, 26, 0.92); border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(0, 0, 0, 0.6), 0 0 80px rgba(47, 123, 255, 0.08);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  animation: termIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) both 0.05s;
+  transition: transform 0.95s cubic-bezier(0.76, 0, 0.24, 1), opacity 0.6s ease;
+}
+.term__bar { position: relative; display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 14px; background: linear-gradient(#2a2d30, #232628); border-bottom: 1px solid rgba(0, 0, 0, 0.6); }
+.term__bar i { width: 12px; height: 12px; border-radius: 50%; background: #ff5f57; box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.3); }
+.term__bar i:nth-child(2) { background: #febc2e; }
+.term__bar i:nth-child(3) { background: #28c840; }
+.term__bar span { position: absolute; left: 0; right: 0; text-align: center; font-family: var(--font-sans); font-size: 12px; font-weight: 500; color: rgba(255, 255, 255, 0.55); pointer-events: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 80px; }
+.term__body { height: 340px; overflow: hidden; padding: 14px 18px 18px; font-size: 13px; line-height: 1.75; white-space: pre-wrap; word-break: break-word; }
+.term__line { min-height: 1.75em; }
+.term__line--dim { color: rgba(233, 237, 240, 0.48); }
+.term__line--ok { color: #4ade80; }
+.term__line--accent { color: #fff; font-weight: 600; }
+.term__line--accent::first-letter { color: var(--accent); }
+.term__arrow { color: #4ade80; font-weight: 700; }
+.term__dir { color: #6bdfff; font-weight: 600; }
+.term__git { color: #7aa2ff; }
+.term__git b { color: #ff7ab2; font-weight: 600; }
+/* Progress bar drawn with CSS: block glyphs (█░) are missing from most mono webfonts. */
+.term__meter { display: inline-block; width: 200px; height: 0.8em; margin: 0 10px; vertical-align: -1px; border-radius: 2px; background: repeating-linear-gradient(90deg, rgba(255,255,255,.14) 0 6px, transparent 6px 8px); overflow: hidden; }
+.term__meter > span { display: block; height: 100%; background: repeating-linear-gradient(90deg, var(--accent) 0 6px, transparent 6px 8px); }
+.term__caret { display: inline-block; width: 8px; height: 1.15em; vertical-align: -3px; margin-left: 2px; background: #e9edf0; animation: blink 1s steps(1) infinite; }
+
+/* bottom: counter */
+.loader__count { position: absolute; left: 0; right: 0; bottom: 7vh; display: flex; flex-direction: column; align-items: center; gap: 8px; font-weight: 600; }
+.loader__count span { font-size: 13px; letter-spacing: 0.08em; }
+.loader__count em { font-style: normal; font-size: 10px; letter-spacing: 0.14em; color: rgba(255, 255, 255, 0.4); animation: blink 1.4s steps(1) infinite; }
+
+@keyframes termIn { from { opacity: 0; transform: translateY(24px) scale(0.97); } }
+@keyframes ldFade { from { opacity: 0; transform: translateY(10px); } }
+
+/* exit: curtain lifts, terminal recedes */
+.loader.is-exiting { clip-path: inset(0 0 100% 0); pointer-events: none; }
+.loader.is-exiting .term { transform: translateY(-60px) scale(0.94); opacity: 0.4; }
+
+/* While booting: freeze the page's own intro animations and scrolling. */
+html.is-booting { overflow: hidden; }
+html.is-booting .hero__copy > *,
+html.is-booting .hero__grid,
+html.is-booting .nav,
+html.is-booting .code { animation-play-state: paused; }
+
+@media (max-width: 1100px) {
+  .loader { grid-template-columns: 1fr; padding: 0 16px; }
+  .loader__steps, .loader__note { display: none; }
+  .term { max-width: 720px; justify-self: center; }
+}
+@media (max-width: 640px) {
+  .term__body { height: 300px; font-size: 10.5px; padding: 12px; }
+  .term__bar span { left: 72px; right: 12px; padding: 0; text-align: right; font-size: 11px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .loader, .term { transition: none; animation: none; }
+}
