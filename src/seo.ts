@@ -273,42 +273,57 @@ export function prerender() {
     </div>`;
 }
 
+/**
+ * /llms.txt in the llmstxt.org format: H1, blockquote summary, then sections of
+ * Markdown link lists ("- [Name](url): note"). PageSpeed's Agentic Browsing audit
+ * requires an H1 and real Markdown links.
+ */
 export function llmsTxt() {
-  const line = (s: string) => `- ${s}`;
+  const link = (text: string, url: string, note?: string) => `- [${text}](${url})${note ? `: ${note}` : ''}`;
+  const mailto = `mailto:${profile.email}`;
   return `# ${profile.name}
 
 > ${site.description}
 
-- Website: ${site.url}
-- Email: ${profile.email}
-- LinkedIn: ${profile.linkedin}
-- GitHub: ${profile.github}
-- Résumé (PDF): ${abs(profile.resume)}
-- Location: ${profile.location} (works remotely for international teams)
-- Current role: ${current ? `${current.role} at ${current.company} (${current.place}), since ${current.period.split('–')[0].trim()}` : 'n/a'}
-- Open to: frontend and full-stack roles (React, Next.js, TypeScript); remote, hybrid or on-site
+${profile.name} is based in ${profile.location} and works remotely with international teams. ${
+    current ? `Currently ${current.role} at ${current.company} (${current.place}).` : ''
+  } Open to frontend and full-stack roles (React, Next.js, TypeScript): remote, hybrid or on-site.
+
+## Profile
+${link('Portfolio', `${site.url}/`, 'projects, experience and contact')}
+${link('Résumé (PDF)', abs(profile.resume))}
+${link('LinkedIn', profile.linkedin)}
+${link('GitHub', profile.github)}
+${link('Email', mailto, profile.email)}
 
 ## Roles
-${profile.roles.map(line).join('\n')}
+${profile.roles.map((r) => `- ${r}`).join('\n')}
 
 ## Experience
 ${[...experience]
   .reverse()
-  .map((e) => line(`${e.role}, ${e.company}${e.url ? ` (${e.url})` : ''} (${e.period}, ${e.place}): ${e.summary}`))
+  .map((e) =>
+    e.url
+      ? link(`${e.role}, ${e.company}`, e.url, `${e.period}, ${e.place}. ${e.summary}`)
+      : `- ${e.role}, ${e.company}: ${e.period}, ${e.place}. ${e.summary}`,
+  )
   .join('\n')}
 
 ## Projects
 ${projects
-  .map((p) => line(`${p.title} (${p.context}${p.client?.url ? `, ${p.client.url}` : ''}): ${p.description}${p.modules ? ` Modules: ${p.modules.join(', ')}.` : ''}`))
+  .map((p) => {
+    const note = `${p.context}. ${p.description}${p.modules ? ` Modules: ${p.modules.join(', ')}.` : ''}`;
+    return link(p.title, p.client?.url ?? `${site.url}/#projects`, note);
+  })
   .join('\n')}
 
 ## Companies worked with
 ${linkedOrganizations
-  .map((o) => line(`${o.name}: ${o.url} (${[...o.roles, ...o.projects].join('; ')}${o.freelance ? '; freelance' : ''})`))
-  .join('\n') || '- n/a'}
+  .map((o) => link(o.name, o.url, [...o.roles, ...o.projects, ...(o.freelance ? ['freelance'] : [])].join('; ')))
+  .join('\n')}
 
 ## AI coding agents (what backs me)
-${aiAgents.map((a) => line(`${a.name} by ${a.maker}: ${a.url}`)).join('\n')}
+${aiAgents.map((a) => link(a.name, a.url, `AI coding agent by ${a.maker}`)).join('\n')}
 
 ## Skills
 ${skills.join(', ')}
@@ -322,6 +337,10 @@ Malayalam (native), English (fluent), Hindi (fluent), Tamil (proficient)
 
 ## FAQ
 ${faqs.map((f) => `### ${f.q}\n${f.a}`).join('\n\n')}
+
+## Optional
+${link('Sitemap', `${site.url}/sitemap.xml`)}
+${link('Open Graph image', abs(site.ogImage))}
 `;
 }
 

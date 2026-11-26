@@ -79,13 +79,16 @@ export function Hero() {
         <h1 className="hero__hi">
           Hi, I'm <strong>{profile.name}</strong>
         </h1>
-        <div className="ticker" aria-label={profile.roles.join(', ')}>
+        {/* aria-label isn't permitted on a role-less div (PageSpeed "Agentic Browsing" flags it), so the roles
+            are exposed as visually hidden text and the animated copy is hidden from assistive tech. */}
+        <p className="sr-only">{profile.roles.join(' · ')}</p>
+        <div className="ticker" aria-hidden="true">
           <div
             className="ticker__track"
             style={{ transform: `translateY(${-1.25 * roleIndex}em)`, transition: animate ? undefined : 'none' }}
           >
             {roles.map((r, i) => (
-              <span key={i} aria-hidden="true">{r}</span>
+              <span key={i}>{r}</span>
             ))}
           </div>
         </div>
