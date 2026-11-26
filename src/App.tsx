@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/react';
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { Connect } from './components/Connect';
 import { Loader } from './components/Loader';
@@ -33,6 +34,8 @@ export default function App() {
         <Connect />
       </main>
       <Footer />
+      {/* Vercel Web Analytics: cookieless page views + visitors. Only reports on Vercel deployments. */}
+      <Analytics />
     </>
   );
 }
