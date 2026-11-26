@@ -15,6 +15,9 @@ export const site = {
   title: 'Nived Ram | Frontend Engineer (React, Next.js) in Bengaluru',
   description:
     'Nived Ram is a Bengaluru-based frontend engineer with 3+ years building React, Next.js and TypeScript products across ERP, HealthTech, EdTech, InsurTech, AI and GovTech. Open to frontend and full-stack roles.',
+  /** Meta / OG / Twitter description: must stay 25–160 chars (Bing flags anything longer). */
+  metaDescription:
+    'Bengaluru frontend engineer with 3+ years building React, Next.js and TypeScript apps for ERP, CRM, insurance, HealthTech and EdTech. Open to new roles.',
   ogImage: '/og-image.png',
   locale: 'en_IN',
   twitterCard: 'summary_large_image',
@@ -195,7 +198,7 @@ export function head() {
   const img = abs(site.ogImage);
   const tags = [
     `<title>${esc(site.title)}</title>`,
-    `<meta name="description" content="${esc(site.description)}" />`,
+    `<meta name="description" content="${esc(site.metaDescription)}" />`,
     `<meta name="author" content="${esc(site.name)}" />`,
     `<meta name="keywords" content="${esc(['Nived Ram', 'Frontend Engineer', 'React developer Bengaluru', 'Next.js developer', 'ERP frontend', 'CRM developer', 'AI-assisted development', ...aiAgents.map((a) => a.name), ...skills.slice(0, 6)].join(', '))}" />`,
     `<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />`,
@@ -211,7 +214,7 @@ export function head() {
     `<meta property="og:locale" content="${site.locale}" />`,
     `<meta property="og:url" content="${site.url}/" />`,
     `<meta property="og:title" content="${esc(site.title)}" />`,
-    `<meta property="og:description" content="${esc(site.description)}" />`,
+    `<meta property="og:description" content="${esc(site.metaDescription)}" />`,
     `<meta property="og:image" content="${img}" />`,
     `<meta property="og:image:width" content="1200" />`,
     `<meta property="og:image:height" content="630" />`,
@@ -221,7 +224,7 @@ export function head() {
     // Twitter / X
     `<meta name="twitter:card" content="${site.twitterCard}" />`,
     `<meta name="twitter:title" content="${esc(site.title)}" />`,
-    `<meta name="twitter:description" content="${esc(site.description)}" />`,
+    `<meta name="twitter:description" content="${esc(site.metaDescription)}" />`,
     `<meta name="twitter:image" content="${img}" />`,
     `<script type="application/ld+json">${JSON.stringify(jsonLd()).replace(/</g, '\\u003c')}</script>`,
   ];
